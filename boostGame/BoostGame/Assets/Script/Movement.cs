@@ -8,12 +8,16 @@ public class Movement : MonoBehaviour
     [SerializeField] float mainThrust = 100f;
     [SerializeField] float rotationThrust = 100f;
     [SerializeField] AudioClip mainEngine;
+
+    [SerializeField] ParticleSystem mainBoosterParticles;
+    [SerializeField] ParticleSystem leftBoosterParticles;
+    [SerializeField] ParticleSystem rightBoosterParticles;
     AudioSource audioSource;
     Rigidbody rigidBody;
     // Start is called before the first frame update
     void Start()
     {
-        rigidBody=GetComponent<Rigidbody>();
+        rigidBody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
         audioSource.Stop();
     }
@@ -26,26 +30,70 @@ public class Movement : MonoBehaviour
     }
 
     void ProcessThrust(){
-        if(Input.GetKey(KeyCode.Space)){
-            if(!audioSource.isPlaying){
-                audioSource.PlayOneShot(mainEngine);
-            }
-            rigidBody.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
+        if (Input.GetKey(KeyCode.Space))
+        {
+            flyUp();
         }
-        else{
-            audioSource.Stop();
+        else
+        {
+            flyStop();
+        }
+    }
+    void flyUp()
+    {
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(mainEngine);
+        }
+        rigidBody.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
+        if (mainBoosterParticles.isStopped)
+        {
+            mainBoosterParticles.Play();
+        }
+    }
+    void flyStop()
+    {
+        audioSource.Stop();
+        mainBoosterParticles.Stop();
+    }
+    void ProcessRotation()
+    {
+        if (Input.GetKey(KeyCode.A))
+        {
+            flyRotateLeft();
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            flyRotateRight();
+        }
+        else
+        {
+            flyRotateStop();
         }
     }
 
-    void ProcessRotation(){
-        if(Input.GetKey(KeyCode.A))
+    void flyRotateLeft()
+    {
+        if (rightBoosterParticles.isStopped)
         {
-            ApplyRotation(rotationThrust);
+            rightBoosterParticles.Play();
         }
-        else if(Input.GetKey(KeyCode.D)){
-            ApplyRotation(-rotationThrust); 
-        }
+        ApplyRotation(rotationThrust);
+    }
 
+    void flyRotateRight()
+    {
+        if (leftBoosterParticles.isStopped)
+        {
+            leftBoosterParticles.Play();
+        }
+        ApplyRotation(-rotationThrust);
+    }
+
+    void flyRotateStop()
+    {
+        rightBoosterParticles.Stop();
+        leftBoosterParticles.Stop();
     }
 
     void ApplyRotation(float rotationFrame)
