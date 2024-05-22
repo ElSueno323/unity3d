@@ -355,6 +355,7 @@
 "Assets/Script/CollisionHandler.cs"
 "Assets/Script/Movement.cs"
 "Assets/Script/Oscillator.cs"
+"Assets/Script/QuitApplication.cs"
 -langversion:9.0
 
 /deterministic
